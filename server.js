@@ -103,11 +103,11 @@ async function seedCatalog() {
             // Insert sample initial activity
             await db.execute({
                 sql: "INSERT INTO movements (user, role, shift, mov_type, cat, product, qty) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                args: ['Manager', 'Manager AYB', 'MAÑANA', 'MERMA', 'Cristalería y Vajilla', 'COPAS DE VINO', 1]
+                args: ['Manager', 'Manager AYB', 'MAÑANA', 'Rotura', 'Cristalería y Vajilla', 'COPAS DE VINO', 1]
             });
             await db.execute({
                 sql: "INSERT INTO movements (user, role, shift, mov_type, cat, product, qty) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                args: ['Almacén', 'Logística', 'MAÑANA', 'REPOSICIÓN', 'Bebidas con Alcohol', 'FERNET BRANCA', 12]
+                args: ['Almacén', 'Logística', 'MAÑANA', 'Reposicion', 'Bebidas con Alcohol', 'FERNET BRANCA', 12]
             });
             console.log('✅ Initial catalog seeded successfully.');
         }
@@ -166,10 +166,10 @@ app.post('/api/movements', async (req, res) => {
         let currentStock = Number(catRes.rows[0].stock);
         let newStock = currentStock;
 
-        if (mov_type === 'REPOSICIÓN') newStock += quantity;
-        else if (mov_type === 'CONSUMO') newStock = Math.max(0, newStock - quantity);
-        else if (mov_type === 'MERMA') newStock = Math.max(0, newStock - quantity);
-        else if (mov_type === 'APERTURA') newStock = quantity;
+        if (mov_type === 'Reposicion') newStock += quantity;
+        else if (mov_type === 'Consumo') newStock = Math.max(0, newStock - quantity);
+        else if (mov_type === 'Rotura') newStock = Math.max(0, newStock - quantity);
+        else if (mov_type === 'Apertura' || mov_type === 'Cierre') newStock = quantity;
 
         // Update catalog table
         await db.execute({
