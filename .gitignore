@@ -1,0 +1,5 @@
+node_modules/
+bar_central.db
+bar_central.db-journal
+.env
+.DS_Store

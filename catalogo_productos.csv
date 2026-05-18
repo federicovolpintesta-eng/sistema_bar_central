@@ -1,0 +1,26 @@
+ID_PRODUCTO,CATEGORIA,NOMBRE_PRODUCTO,UNIDAD_MEDIDA,STOCK_MINIMO_ALERTA
+BC_ALC_001,Bebidas con Alcohol,LICOR BAILEYS,Botella,2
+BC_ALC_002,Bebidas con Alcohol,FERNET BRANCA,Botella,5
+BC_ALC_003,Bebidas con Alcohol,APEROL,Botella,3
+BC_ALC_004,Bebidas con Alcohol,RON HAVANA,Botella,2
+BC_ALC_005,Bebidas con Alcohol,RON BACARDÍ,Botella,2
+BC_ALC_006,Bebidas con Alcohol,ESPUMANTE,Botella,6
+BC_CER_001,Cervezas,LAGER,Botella,24
+BC_CER_002,Cervezas,GOLDEN,Botella,24
+BC_CER_003,Cervezas,STOUT,Botella,12
+BC_CER_004,Cervezas,IPA,Botella,24
+BC_CER_005,Cervezas,APA,Botella,12
+BC_CER_006,Cervezas,AMBER LAGER,Botella,12
+BC_SAL_001,Bebidas Sin Alcohol,AGUA SIN GAS (FARDO),Fardo x12,5
+BC_SAL_002,Bebidas Sin Alcohol,AGUA CON GAS (FARDO),Fardo x12,5
+BC_SAL_003,Bebidas Sin Alcohol,AGUA SABORIZADA (FARDO),Fardo x12,4
+BC_SAL_004,Bebidas Sin Alcohol,BOTELLA AQUA GENERAL,Botella,10
+BC_SAL_005,Bebidas Sin Alcohol,GASEOSA PERSONAL,Unidad,24
+BC_CAF_001,Cafetería y Desayuno,CAFE EN GRANO,Kg,3
+BC_CAF_002,Cafetería y Desayuno,JUGO DE NARANJA,Kg,10
+BC_ROT_001,Cristalería y Vajilla,COPAS DE VINO,Unidad,5
+BC_ROT_002,Cristalería y Vajilla,COPAS DE ESPUMANTE,Unidad,5
+BC_ROT_003,Cristalería y Vajilla,VASOS TRAGO LARGO,Unidad,5
+BC_ROT_004,Cristalería y Vajilla,VASOS TRAGO CORTO,Unidad,5
+BC_ROT_005,Cristalería y Vajilla,TAZAS DE CAFÉ,Unidad,5
+BC_ROT_006,Cristalería y Vajilla,OTROS,Unidad,1

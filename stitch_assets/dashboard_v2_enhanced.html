@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bar Central - Control de Inventario Premium</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#00687a",
+                        "on-background": "#dee3e6",
+                        "primary": "#4cd7f6",
+                        "neon-violet": "#8B5CF6",
+                        "neon-violet-light": "#C084FC",
+                        "slate-surface": "#1E293B",
+                        "on-tertiary-container": "#5b3200",
+                        "on-surface-variant": "#bcc9cd",
+                        "on-tertiary-fixed": "#2d1600",
+                        "glass-border": "rgba(255, 255, 255, 0.1)",
+                        "secondary-container": "#00a572",
+                        "error": "#ffb4ab",
+                        "surface-container-high": "#252b2d",
+                        "obsidian-bg": "#0B0F19",
+                        "tertiary-container": "#e89337",
+                        "secondary": "#4edea3",
+                        "surface-container-lowest": "#090f11",
+                        "surface-container": "#1b2122",
+                        "surface-container-low": "#171d1e",
+                        "on-secondary-container": "#00311f",
+                        "tertiary": "#ffb873",
+                        "primary-container": "#06b6d4",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#004e5c",
+                        "tertiary-fixed": "#ffdcbf",
+                        "inverse-on-surface": "#2b3133",
+                        "alert-violet": "#8B5CF6",
+                        "secondary-fixed-dim": "#4edea3",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-dim": "#0e1416",
+                        "on-primary": "#003640",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface": "#0e1416",
+                        "on-tertiary-fixed-variant": "#6a3b00",
+                        "error-container": "#93000a",
+                        "tertiary-fixed-dim": "#ffb873",
+                        "on-surface": "#dee3e6",
+                        "outline-variant": "#3d494c",
+                        "primary-fixed": "#acedff",
+                        "inverse-surface": "#dee3e6",
+                        "surface-bright": "#343a3c",
+                        "critical-crimson": "#EF4444",
+                        "on-tertiary": "#4b2800",
+                        "on-error": "#690005",
+                        "primary-fixed-dim": "#4cd7f6",
+                        "outline": "#869397",
+                        "surface-container-highest": "#303638",
+                        "background": "#0e1416",
+                        "on-secondary": "#003824",
+                        "surface-variant": "#303638",
+                        "on-primary-container": "#00424f",
+                        "on-primary-fixed": "#001f26",
+                        "surface-tint": "#4cd7f6",
+                        "on-secondary-fixed": "#002113"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "8px",
+                        "card-padding": "24px",
+                        "gutter": "16px",
+                        "row-height": "64px",
+                        "container-margin": "24px"
+                    },
+                    "fontFamily": {
+                        "display-stock": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "metric-sm": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-stock": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "metric-sm": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass-modal {
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        .bg-obsidian-gradient {
+            background: radial-gradient(circle at top right, #1e293b 0%, #0b0f19 100%);
+        }
+        .neon-glow-primary:hover {
+            box-shadow: 0 0 20px rgba(76, 215, 246, 0.4);
+        }
+        .neon-glow-violet {
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+        }
+        .chart-bar {
+            background: linear-gradient(to top, rgba(139, 92, 246, 0.8), rgba(76, 215, 246, 0.8));
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-obsidian-bg text-on-background font-body-md selection:bg-neon-violet/30 min-h-screen overflow-x-hidden">
+<!-- Quick Movement Modal (Hidden by default, can be toggled) -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden p-4" id="movement-modal">
+<div class="glass-modal w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300" id="modal-container">
+<div class="p-8">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-headline-lg text-on-surface">Registrar Movimiento</h3>
+<button class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors" onclick="toggleModal()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<form class="space-y-6">
+<div>
+<label class="block text-[11px] font-label-caps text-on-surface-variant mb-3 uppercase tracking-widest">Tipo de Movimiento</label>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+<button class="px-2 py-3 rounded-xl border border-glass-border font-label-caps text-[10px] bg-neon-violet/20 text-white border-neon-violet/50" type="button">APERTURA</button>
+<button class="px-2 py-3 rounded-xl border border-glass-border font-label-caps text-[10px] text-on-surface-variant hover:bg-white/5 transition-all" type="button">REPOSICIÓN</button>
+<button class="px-2 py-3 rounded-xl border border-glass-border font-label-caps text-[10px] text-on-surface-variant hover:bg-white/5 transition-all" type="button">CONSUMO</button>
+<button class="px-2 py-3 rounded-xl border border-glass-border font-label-caps text-[10px] text-on-surface-variant hover:bg-white/5 transition-all" type="button">MERMA</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<label class="block text-[11px] font-label-caps text-on-surface-variant mb-2 uppercase tracking-widest">Categoría</label>
+<select class="w-full bg-surface-container border-glass-border rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-neon-violet focus:border-neon-violet appearance-none">
+<option>Bebidas con Alcohol</option>
+<option>Cervezas</option>
+<option>Sin Alcohol</option>
+</select>
+</div>
+<div>
+<label class="block text-[11px] font-label-caps text-on-surface-variant mb-2 uppercase tracking-widest">Producto</label>
+<select class="w-full bg-surface-container border-glass-border rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-neon-violet focus:border-neon-violet appearance-none">
+<option>Aperol</option>
+<option>Fernet Branca</option>
+<option>Licor Baileys</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-[11px] font-label-caps text-on-surface-variant mb-2 uppercase tracking-widest text-center">Cantidad</label>
+<div class="flex items-center justify-center gap-6">
+<button class="w-14 h-14 rounded-2xl bg-surface-container-high border border-glass-border flex items-center justify-center text-primary text-2xl hover:bg-primary/10 transition-all" type="button">-</button>
+<input class="w-24 bg-transparent border-none text-center font-display-stock text-4xl text-on-surface focus:ring-0" type="number" value="1"/>
+<button class="w-14 h-14 rounded-2xl bg-surface-container-high border border-glass-border flex items-center justify-center text-neon-violet text-2xl hover:bg-neon-violet/10 transition-all" type="button">+</button>
+</div>
+</div>
+<button class="w-full bg-gradient-to-r from-neon-violet to-neon-violet-light text-white py-4 rounded-2xl font-headline-md shadow-lg shadow-neon-violet/20 hover:scale-[1.02] active:scale-95 transition-all mt-4" type="button">
+                    Guardar Movimiento
+                </button>
+</form>
+</div>
+</div>
+</div>
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-obsidian-bg/80 backdrop-blur-xl border-b border-glass-border shadow-sm flex justify-between items-center h-row-height px-container-margin">
+<div class="flex items-center gap-4">
+<h1 class="font-display-stock text-primary tracking-tight text-headline-md">Bar Central</h1>
+<span class="hidden md:block text-outline font-label-caps border-l border-outline/30 pl-4">Control de Inventario Premium</span>
+</div>
+<div class="flex items-center gap-stack-gap">
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary-container px-4 py-2 rounded-lg font-metric-sm flex items-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+            Sync Google Sheets
+        </button>
+<button class="bg-gradient-to-r from-secondary to-secondary-container text-on-secondary-container px-4 py-2 rounded-lg font-metric-sm flex items-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+            WhatsApp Alerts
+        </button>
+<div class="flex items-center ml-4 gap-2 border-l border-glass-border pl-4">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-on-surface cursor-pointer p-2 rounded-full hover:bg-white/5 transition-colors">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-on-surface cursor-pointer p-2 rounded-full hover:bg-white/5 transition-colors">settings</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/50 ml-2">
+<img alt="Manager Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdPt3BxIe040y1hz3K29IVr0k6uQBlvi7JXFdUu4ZnzznGHNETr4nqPO-75v6RB2Q8xnSwABWfI_5R_x21-Rw0NWlW0PnY7ImdserBLOhUQFZFO9UgPcrioKzpBOkHQO6LyArmzRDMGkatjgEj8mD7-lEc995FaRdugu3OYCAovs6GKvuYhtyKB0LZUxs_LKRKIicalQyYUhGrwdH_jsflXmkGpgMgLuC2cBH9UtYhN0jjNh9irOQcfs2JmqdzR9T2hISIp4DuWt0"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="hidden md:flex fixed left-0 top-0 h-full w-64 bg-obsidian-bg border-r border-glass-border flex-col py-stack-gap z-40 mt-row-height">
+<div class="px-6 py-8">
+<div class="flex flex-col gap-1">
+<span class="font-headline-lg text-primary">Bar Central</span>
+<span class="text-on-surface-variant text-[12px] uppercase tracking-widest font-label-caps">Premium Management</span>
+</div>
+<!-- Shift Selector -->
+<div class="mt-8 bg-surface-container rounded-xl p-1 flex gap-1">
+<button class="flex-1 text-[10px] py-2 rounded-lg font-label-caps bg-neon-violet text-white shadow-lg">MAÑANA</button>
+<button class="flex-1 text-[10px] py-2 rounded-lg font-label-caps text-on-surface-variant hover:bg-white/5">TARDE</button>
+<button class="flex-1 text-[10px] py-2 rounded-lg font-label-caps text-on-surface-variant hover:bg-white/5">NOCHE</button>
+</div>
+</div>
+<nav class="flex-1 px-3 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-neon-violet/10 text-neon-violet border-l-4 border-neon-violet font-label-caps text-[12px] transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+            Dashboard
+        </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 font-label-caps text-[12px] transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+            Inventory
+        </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 font-label-caps text-[12px] transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">swap_horiz</span>
+            Movements
+        </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 font-label-caps text-[12px] transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+            Analytics
+        </a>
+</nav>
+<div class="px-6 py-6 mt-auto">
+<div class="bg-surface-container rounded-xl p-4 border border-glass-border">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-2 h-2 rounded-full bg-neon-violet animate-pulse"></div>
+<span class="text-[11px] font-label-caps text-on-surface-variant">MANAGER ONLINE</span>
+</div>
+<p class="font-metric-sm text-on-surface">M. Rodriguez</p>
+</div>
+<button class="w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-critical-crimson hover:bg-red-500/10 font-label-caps text-[12px] transition-all">
+<span class="material-symbols-outlined">logout</span>
+            Logout
+        </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-[calc(theme(spacing.row-height)+24px)] px-container-margin pb-12 min-h-screen bg-obsidian-gradient">
+<!-- Header & Action Row -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<nav class="flex items-center gap-2 text-on-surface-variant font-label-caps text-[10px] mb-2 uppercase tracking-widest">
+<span>Admin</span>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span class="text-neon-violet">Dashboard de Inventario</span>
+</nav>
+<h2 class="font-headline-lg text-on-surface">Bar Central - Control de Inventario</h2>
+</div>
+<button class="bg-gradient-to-br from-neon-violet to-neon-violet-light text-white px-6 py-3 rounded-xl font-headline-md flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-xl neon-glow-violet" onclick="toggleModal()">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+            Registrar Movimiento
+        </button>
+</div>
+<!-- KPI Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-8">
+<div class="glass-card p-card-padding rounded-2xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-primary">category</span>
+</div>
+<p class="font-label-caps text-on-surface-variant text-[11px] mb-2">PRODUCTOS TOTALES</p>
+<div class="flex items-baseline gap-2">
+<span class="font-display-stock text-on-surface text-display-stock">25</span>
+<span class="text-on-surface-variant font-label-caps">ITEMS</span>
+</div>
+<div class="mt-4 flex items-center gap-2 text-primary font-metric-sm">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+2 este mes</span>
+</div>
+</div>
+<div class="glass-card p-card-padding rounded-2xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-secondary">check_circle</span>
+</div>
+<p class="font-label-caps text-on-surface-variant text-[11px] mb-2 text-secondary">ESTADO NORMAL</p>
+<div class="flex items-baseline gap-2">
+<span class="font-display-stock text-secondary text-display-stock">21</span>
+<span class="text-on-surface-variant font-label-caps">OK</span>
+</div>
+<div class="mt-4 flex items-center gap-2 text-secondary font-metric-sm">
+<div class="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[84%]"></div>
+</div>
+<span>84%</span>
+</div>
+</div>
+<div class="glass-card p-card-padding rounded-2xl relative overflow-hidden group border-neon-violet/30 neon-glow-violet">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-neon-violet">warning</span>
+</div>
+<p class="font-label-caps text-on-surface-variant text-[11px] mb-2 text-neon-violet">STOCK CRÍTICO</p>
+<div class="flex items-baseline gap-2">
+<span class="font-display-stock text-neon-violet text-display-stock">04</span>
+<span class="text-on-surface-variant font-label-caps">ALERTS</span>
+</div>
+<p class="mt-4 text-on-surface-variant font-metric-sm italic">Acción requerida inmediata</p>
+</div>
+<div class="glass-card p-card-padding rounded-2xl relative overflow-hidden group border-error/20">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-error">delete_sweep</span>
+</div>
+<p class="font-label-caps text-on-surface-variant text-[11px] mb-2 text-error">MERMAS DEL TURNO</p>
+<div class="flex items-baseline gap-2">
+<span class="font-display-stock text-error text-display-stock">02</span>
+<span class="text-on-surface-variant font-label-caps">UNITS</span>
+</div>
+<div class="mt-4 flex items-center gap-2 text-error font-metric-sm">
+<span class="material-symbols-outlined text-[16px]">history</span>
+<span>Reportado hace 1h</span>
+</div>
+</div>
+</section>
+<!-- Weekly Consumption Chart Card -->
+<section class="glass-card p-8 rounded-3xl mb-8">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="font-headline-md text-on-surface">Consumo Semanal de Bebidas</h3>
+<p class="text-on-surface-variant text-[14px]">Promedio de unidades despachadas por día</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-neon-violet"></div>
+<span class="text-[12px] font-label-caps text-on-surface-variant">Unidades</span>
+</div>
+</div>
+</div>
+<div class="h-64 flex items-end justify-between gap-2 sm:gap-4 px-4 relative">
+<!-- Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8">
+<div class="border-b border-white/5 w-full"></div>
+<div class="border-b border-white/5 w-full"></div>
+<div class="border-b border-white/5 w-full"></div>
+<div class="border-b border-white/5 w-full"></div>
+</div>
+<!-- Chart Bars -->
+<div class="flex-1 flex flex-col items-center gap-3 z-10">
+<div class="chart-bar w-full max-w-[40px] rounded-t-lg transition-all duration-500 hover:brightness-125" style="height: 45%;"></div>
+<span class="text-[11px] font-label-caps text-on-surface-variant">LUN</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3 z-10">
+<div class="chart-bar w-full max-w-[40px] rounded-t-lg transition-all duration-500 hover:brightness-125" style="height: 38%;"></div>
+<span class="text-[11px] font-label-caps text-on-surface-variant">MAR</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3 z-10">
+<div class="chart-bar w-full max-w-[40px] rounded-t-lg transition-all duration-500 hover:brightness-125" style="height: 52%;"></div>
+<span class="text-[11px] font-label-caps text-on-surface-variant">MIÉ</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3 z-10">
+<div class="chart-bar w-full max-w-[40px] rounded-t-lg transition-all duration-500 hover:brightness-125" style="height: 48%;"></div>
+<span class="text-[11px] font-label-caps text-on-surface-variant">JUE</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3 z-10">
+<div class="chart-bar w-full max-w-[40px] rounded-t-lg transition-all duration-500 hover:brightness-125 shadow-[0_0_20px_rgba(139,92,246,0.6)]" style="height: 85%;"></div>
+<span class="text-[11px] font-label-caps text-primary font-bold">VIE</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3 z-10">
+<div class="chart-bar w-full max-w-[40px] rounded-t-lg transition-all duration-500 hover:brightness-125 shadow-[0_0_25px_rgba(139,92,246,0.7)]" style="height: 100%;"></div>
+<span class="text-[11px] font-label-caps text-primary font-bold">SÁB</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3 z-10">
+<div class="chart-bar w-full max-w-[40px] rounded-t-lg transition-all duration-500 hover:brightness-125 shadow-[0_0_15px_rgba(139,92,246,0.5)]" style="height: 75%;"></div>
+<span class="text-[11px] font-label-caps text-primary font-bold">DOM</span>
+</div>
+</div>
+</section>
+<!-- Filters & Table Section -->
+<div class="glass-card rounded-2xl overflow-hidden mb-8">
+<div class="p-6 border-b border-glass-border flex flex-wrap items-center justify-between gap-4">
+<div class="flex flex-wrap gap-2">
+<button class="px-4 py-2 rounded-full font-metric-sm bg-neon-violet/20 text-neon-violet border border-neon-violet/30">Todos</button>
+<button class="px-4 py-2 rounded-full font-metric-sm text-on-surface-variant hover:bg-white/5 border border-transparent transition-all">Bebidas con Alcohol</button>
+<button class="px-4 py-2 rounded-full font-metric-sm text-on-surface-variant hover:bg-white/5 border border-transparent transition-all">Cervezas</button>
+<button class="px-4 py-2 rounded-full font-metric-sm text-on-surface-variant hover:bg-white/5 border border-transparent transition-all">Sin Alcohol</button>
+</div>
+<div class="relative min-w-[240px]">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container border-glass-border rounded-lg pl-10 pr-4 py-2 text-on-surface focus:ring-1 focus:ring-neon-violet focus:border-neon-violet" placeholder="Buscar producto..." type="text"/>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high/50 text-on-surface-variant font-label-caps text-[11px] uppercase tracking-wider border-b border-glass-border">
+<th class="px-6 py-4 font-semibold">ID</th>
+<th class="px-6 py-4 font-semibold">Categoría</th>
+<th class="px-6 py-4 font-semibold">Producto</th>
+<th class="px-6 py-4 font-semibold">Unidad</th>
+<th class="px-6 py-4 font-semibold text-center">Stock Actual</th>
+<th class="px-6 py-4 font-semibold text-center">Mínimo Alerta</th>
+<th class="px-6 py-4 font-semibold text-right">Estado</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-glass-border">
+<tr class="group hover:bg-white/5 transition-colors cursor-pointer h-row-height">
+<td class="px-6 py-4 font-metric-sm text-on-surface-variant">BC_ALC_001</td>
+<td class="px-6 py-4"><span class="text-[12px] bg-slate-700/30 text-primary-fixed px-2 py-1 rounded">Alcohol</span></td>
+<td class="px-6 py-4 font-bold text-on-surface">LICOR BAILEYS</td>
+<td class="px-6 py-4 text-on-surface-variant">Botella</td>
+<td class="px-6 py-4 text-center font-display-stock text-[20px]">8</td>
+<td class="px-6 py-4 text-center text-on-surface-variant">2</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-bold bg-secondary/10 text-secondary border border-secondary/20">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                Normal
+                            </span>
+</td>
+</tr>
+<tr class="group hover:bg-white/5 transition-colors cursor-pointer h-row-height">
+<td class="px-6 py-4 font-metric-sm text-on-surface-variant">BC_ALC_002</td>
+<td class="px-6 py-4"><span class="text-[12px] bg-slate-700/30 text-primary-fixed px-2 py-1 rounded">Alcohol</span></td>
+<td class="px-6 py-4 font-bold text-on-surface">FERNET BRANCA</td>
+<td class="px-6 py-4 text-on-surface-variant">Botella</td>
+<td class="px-6 py-4 text-center font-display-stock text-[20px]">18</td>
+<td class="px-6 py-4 text-center text-on-surface-variant">5</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-bold bg-secondary/10 text-secondary border border-secondary/20">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                Normal
+                            </span>
+</td>
+</tr>
+<tr class="group hover:bg-neon-violet/5 transition-colors cursor-pointer h-row-height">
+<td class="px-6 py-4 font-metric-sm text-on-surface-variant">BC_ALC_003</td>
+<td class="px-6 py-4"><span class="text-[12px] bg-slate-700/30 text-primary-fixed px-2 py-1 rounded">Alcohol</span></td>
+<td class="px-6 py-4 font-bold text-neon-violet animate-pulse">APEROL</td>
+<td class="px-6 py-4 text-on-surface-variant">Botella</td>
+<td class="px-6 py-4 text-center font-display-stock text-[20px] text-neon-violet">2</td>
+<td class="px-6 py-4 text-center text-on-surface-variant">3</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-bold bg-neon-violet/20 text-neon-violet border border-neon-violet/30 shadow-[0_0_10px_rgba(139,92,246,0.2)]">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">warning</span>
+                                Crítico
+                            </span>
+</td>
+</tr>
+<tr class="group hover:bg-white/5 transition-colors cursor-pointer h-row-height">
+<td class="px-6 py-4 font-metric-sm text-on-surface-variant">BC_ROT_001</td>
+<td class="px-6 py-4"><span class="text-[12px] bg-slate-700/30 text-primary-fixed px-2 py-1 rounded">Vajilla</span></td>
+<td class="px-6 py-4 font-bold text-on-surface">COPAS DE VINO</td>
+<td class="px-6 py-4 text-on-surface-variant">Unidad</td>
+<td class="px-6 py-4 text-center font-display-stock text-[20px] text-neon-violet">3</td>
+<td class="px-6 py-4 text-center text-on-surface-variant">5</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-bold bg-neon-violet/20 text-neon-violet border border-neon-violet/30">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+                                Reponer
+                            </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-surface-container-low/30 flex items-center justify-between">
+<span class="text-[12px] text-on-surface-variant font-metric-sm">Mostrando 4 de 25 productos</span>
+<div class="flex gap-2">
+<button class="p-2 rounded hover:bg-white/5 text-on-surface-variant disabled:opacity-50"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-2 rounded hover:bg-white/5 text-on-surface-variant"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+</div>
+<!-- Secondary Insights -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<div class="lg:col-span-2 glass-card p-6 rounded-2xl">
+<h3 class="font-headline-md mb-6">Actividad Reciente del Turno</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-white/5">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center text-error">
+<span class="material-symbols-outlined">broken_image</span>
+</div>
+<div>
+<p class="font-metric-sm text-on-surface">Baja por Rotura: Copa de Vino</p>
+<p class="text-[12px] text-on-surface-variant">Reportado por Manager - 14:20</p>
+</div>
+</div>
+<span class="text-error font-bold">-1 Unidad</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-white/5">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">inventory</span>
+</div>
+<div>
+<p class="font-metric-sm text-on-surface">Ingreso de Mercadería: Fernet Branca</p>
+<p class="text-[12px] text-on-surface-variant">Recepción Almacén - 11:45</p>
+</div>
+</div>
+<span class="text-secondary font-bold">+12 Unidades</span>
+</div>
+</div>
+</div>
+<div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+<div>
+<h3 class="font-headline-md mb-2">Valor del Stock</h3>
+<p class="text-on-surface-variant text-[14px] mb-6">Valorización estimada total del catálogo activo.</p>
+<div class="font-display-stock text-[40px] text-neon-violet">$452.8k</div>
+<p class="text-[12px] text-secondary mt-2 flex items-center gap-1 font-metric-sm">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+                    +12.4% vs Mes Anterior
+                </p>
+</div>
+<div class="mt-8">
+<img class="w-full h-32 object-cover rounded-xl border border-neon-violet/20" data-alt="Macro cinematic shot of premium spirits" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7Iy25k_xNunXR58qoAU3w1YAMOCbnqfJbt0_Blr7tyBPGOP9ac4mSRXx6Ho6n1I9OpmLwhAj3skd70jCRrD2Hqov1rB9EYiTc7FCmnQnIXE7k1mhmXJ-tbutuTdlRh8pSBytonc146T6LUCbsNJ9tXerzlhhL7598sQqS6B3fK7X43Fb6Es0gG434XzA7GYBNlry-YFpgGg0SpxYi2MxpjoegGLx__ED1YvOY5tC60gJaC7jRnae87-N-_SZYlGOw9_GnEXwsxGk"/>
+</div>
+</div>
+</div>
+</main>
+<script>
+    function toggleModal() {
+        const modal = document.getElementById('movement-modal');
+        const container = document.getElementById('modal-container');
+        
+        if (modal.classList.contains('hidden')) {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                container.classList.remove('scale-95', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        } else {
+            container.classList.add('scale-95', 'opacity-0');
+            container.classList.remove('scale-100', 'opacity-100');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Shift Toggle Interaction
+        const shiftButtons = document.querySelectorAll('.shift-btn');
+        shiftButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                shiftButtons.forEach(b => {
+                    b.classList.remove('bg-neon-violet', 'text-white');
+                    b.classList.add('text-on-surface-variant');
+                });
+                btn.classList.add('bg-neon-violet', 'text-white');
+                btn.classList.remove('text-on-surface-variant');
+            });
+        });
+    });
+</script>
+</body></html>

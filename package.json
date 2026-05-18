@@ -1,0 +1,27 @@
+{
+  "name": "sistema_bar_central",
+  "version": "1.0.0",
+  "description": "Sistema de Control de Inventario Premium para Bar Central",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "inventario",
+    "bar",
+    "premium",
+    "sqlite",
+    "express"
+  ],
+  "author": "Federico Volpintesta",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@libsql/client": "^0.17.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "sqlite3": "^6.0.1"
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "name": "Bar Central - Tally a Sheets & WhatsApp (GreenAPI)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "inventario-bar-central",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook Tally.so",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 300],
+      "webhookId": "bar-central-inventario-tally"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extraer campos del JSON de Tally\nconst data = $input.item.json.data;\nconst fields = {};\nif (data && data.fields) {\n  data.fields.forEach(f => {\n    fields[f.key] = f.value;\n  });\n}\n\nreturn {\n  fecha_hora: new Date(data ? data.createdAt : Date.now()).toLocaleString('es-AR'),\n  turno: fields.turno || 'Sin Asignar',\n  responsable: fields.responsable || 'Equipo Bar',\n  tipo_movimiento: fields.tipo_movimiento || 'Consumo',\n  categoria: fields.categoria || 'General',\n  producto: fields.producto || 'Desconocido',\n  cantidad: Number(fields.cantidad) || 0,\n  observaciones: fields.observaciones || ''\n};"
+      },
+      "id": "2",
+      "name": "Parse Tally Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [420, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1lFkPl6M6M8OYfmIWor17aR1F5KDhnKnp-S-b2gKdMcQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Movimientos",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "FECHA_HORA": "={{ $json.fecha_hora }}",
+            "TURNO": "={{ $json.turno }}",
+            "RESPONSABLE": "={{ $json.responsable }}",
+            "TIPO_MOVIMIENTO": "={{ $json.tipo_movimiento }}",
+            "CATEGORIA": "={{ $json.categoria }}",
+            "PRODUCTO": "={{ $json.producto }}",
+            "CANTIDAD": "={{ $json.cantidad }}",
+            "OBSERVACIONES": "={{ $json.observaciones }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "3",
+      "name": "Google Sheets - Guardar Movimiento",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.tipo_movimiento === 'Rotura / Merma' || $json.cantidad > 50 }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "4",
+      "name": "Condición: ¿Es Rotura o Alerta?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.greenapi.com/waInstance7107622627/sendMessage/6db68f5e882d440c85604775fafc7d7367e42aef9520469db9",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chatId",
+              "value": "5493424624840@c.us"
+            },
+            {
+              "name": "message",
+              "value": "=⚠️ ALERTA BAR CENTRAL:\n\nSe reportó {{ $node['Parse Tally Data'].json.tipo_movimiento }} en el producto: *{{ $node['Parse Tally Data'].json.producto }}* (Cantidad: {{ $node['Parse Tally Data'].json.cantidad }}).\n\nResponsable de turno: {{ $node['Parse Tally Data'].json.responsable }}.\nObservaciones: {{ $node['Parse Tally Data'].json.observaciones }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5",
+      "name": "WhatsApp GreenAPI (Gratis)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1160, 200]
+    }
+  ],
+  "connections": {
+    "Webhook Tally.so": {
+      "main": [
+        [
+          {
+            "node": "Parse Tally Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Tally Data": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Guardar Movimiento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Guardar Movimiento": {
+      "main": [
+        [
+          {
+            "node": "Condición: ¿Es Rotura o Alerta?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Condición: ¿Es Rotura o Alerta?": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp GreenAPI (Gratis)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {}
+}

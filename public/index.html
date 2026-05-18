@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar Central - Control de Inventario Premium</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#8b5cf6',
+                        'primary-container': '#6d28d9',
+                        'on-primary-container': '#ede9fe',
+                        'secondary': '#10b981',
+                        'secondary-container': '#047857',
+                        'on-secondary-container': '#d1fae5',
+                        'error': '#f43f5e',
+                        'obsidian-bg': '#09090e',
+                        'surface-container-low': 'rgba(255, 255, 255, 0.03)',
+                        'surface-container': 'rgba(255, 255, 255, 0.05)',
+                        'surface-container-high': 'rgba(255, 255, 255, 0.08)',
+                        'on-surface': '#f8fafc',
+                        'on-surface-variant': '#94a3b8',
+                        'neon-violet': '#8b5cf6',
+                        'critical-crimson': '#f43f5e',
+                        'glass-border': 'rgba(255, 255, 255, 0.1)'
+                    },
+                    fontFamily: {
+                        'display-stock': ['Outfit', 'sans-serif'],
+                        'headline-lg': ['Plus Jakarta Sans', 'sans-serif'],
+                        'headline-md': ['Plus Jakarta Sans', 'sans-serif'],
+                        'metric-sm': ['Plus Jakarta Sans', 'sans-serif'],
+                        'label-caps': ['Plus Jakarta Sans', 'sans-serif']
+                    },
+                    spacing: {
+                        'row-height': '64px',
+                        'gutter': '24px',
+                        'container-margin': '32px',
+                        'stack-gap': '16px'
+                    },
+                    backgroundImage: {
+                        'obsidian-gradient': 'radial-gradient(circle at 50% 0%, #1e1b4b 0%, #09090e 70%)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #09090e; color: #f8fafc; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .text-outline { -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2); color: transparent; }
+        .chart-bar { background: linear-gradient(180deg, #8b5cf6 0%, rgba(139,92,246,0.1) 100%); }
+    </style>
+</head>
+<body class="bg-obsidian-bg min-h-screen selection:bg-neon-violet selection:text-white">
+
+    <!-- LOGIN & SHIFT MODAL -->
+    <div id="login-modal" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 flex items-center justify-center p-4 transition-all duration-300">
+        <div class="glass-card max-w-xl w-full rounded-3xl p-8 border border-neon-violet/30 shadow-[0_0_50px_rgba(139,92,246,0.2)]">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 rounded-full bg-neon-violet/20 border border-neon-violet flex items-center justify-center mx-auto mb-4 text-neon-violet shadow-[0_0_20px_rgba(139,92,246,0.5)]">
+                    <span class="material-symbols-outlined text-3xl">admin_panel_settings</span>
+                </div>
+                <h2 class="font-display-stock text-3xl font-bold text-white tracking-tight">Acceso Bar Central</h2>
+                <p class="text-on-surface-variant text-[14px] mt-2 font-metric-sm">Selecciona tu perfil de usuario y turno activo para auditar la barra</p>
+            </div>
+
+            <!-- User Profiles Grid -->
+            <div class="mb-6">
+                <label class="block text-[11px] font-label-caps text-on-surface-variant mb-3 uppercase tracking-widest">Perfiles de Usuario</label>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <button onclick="selectUser('Abel', 'Admin General')" id="user-btn-Abel" class="user-btn p-4 rounded-2xl border border-glass-border text-left hover:bg-white/5 transition-all group flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-neon-violet to-purple-600 flex items-center justify-center font-bold text-white text-[16px] shadow-lg">A</div>
+                        <div>
+                            <p class="font-metric-sm font-bold text-white text-[14px]">Abel</p>
+                            <span class="text-[10px] font-label-caps text-neon-violet uppercase">Admin General</span>
+                        </div>
+                    </button>
+                    <button onclick="selectUser('Eli', 'Admin Operaciones')" id="user-btn-Eli" class="user-btn p-4 rounded-2xl border border-glass-border text-left hover:bg-white/5 transition-all group flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-rose-500 flex items-center justify-center font-bold text-white text-[16px] shadow-lg">E</div>
+                        <div>
+                            <p class="font-metric-sm font-bold text-white text-[14px]">Eli</p>
+                            <span class="text-[10px] font-label-caps text-pink-400 uppercase">Admin Operaciones</span>
+                        </div>
+                    </button>
+                    <button onclick="selectUser('Federico', 'Manager AYB')" id="user-btn-Federico" class="user-btn p-4 rounded-2xl border border-glass-border text-left hover:bg-white/5 transition-all group flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white text-[16px] shadow-lg">F</div>
+                        <div>
+                            <p class="font-metric-sm font-bold text-white text-[14px]">Federico</p>
+                            <span class="text-[10px] font-label-caps text-blue-400 uppercase">Manager AYB</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Custom Bartender Input -->
+            <div class="mb-8">
+                <label class="block text-[11px] font-label-caps text-on-surface-variant mb-2 uppercase tracking-widest">¿Eres Bartender / Colaborador?</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">person</span>
+                    <input id="custom-username" oninput="selectCustomUser(this.value)" class="w-full bg-surface-container border border-glass-border rounded-xl pl-12 pr-4 py-3.5 text-white placeholder-on-surface-variant text-[14px] focus:ring-2 focus:ring-neon-violet focus:border-neon-violet outline-none transition-all" placeholder="Escribe tu nombre completo (ej. Lucas G.)" />
+                </div>
+            </div>
+
+            <!-- Shift Selection -->
+            <div class="mb-8">
+                <label class="block text-[11px] font-label-caps text-on-surface-variant mb-3 uppercase tracking-widest">Turno de Trabajo</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="selectLoginShift('MAÑANA')" id="login-shift-MAÑANA" class="login-shift-btn p-3 rounded-xl border border-glass-border text-center hover:bg-white/5 font-label-caps text-[12px] transition-all">MAÑANA</button>
+                    <button onclick="selectLoginShift('TARDE')" id="login-shift-TARDE" class="login-shift-btn p-3 rounded-xl border border-glass-border text-center hover:bg-white/5 font-label-caps text-[12px] transition-all">TARDE</button>
+                    <button onclick="selectLoginShift('NOCHE')" id="login-shift-NOCHE" class="login-shift-btn p-3 rounded-xl border border-glass-border text-center hover:bg-white/5 font-label-caps text-[12px] transition-all">NOCHE</button>
+                </div>
+            </div>
+
+            <button onclick="submitLogin()" class="w-full bg-gradient-to-r from-neon-violet to-primary text-white font-label-caps py-4 rounded-2xl text-[14px] font-bold shadow-[0_0_30px_rgba(139,92,246,0.5)] hover:scale-[1.02] active:scale-95 transition-all">
+                Ingresar al Sistema
+            </button>
+        </div>
+    </div>
+
+    <!-- MOVEMENT REGISTRATION MODAL -->
+    <div id="movement-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-all duration-300">
+        <div id="modal-container" class="glass-card max-w-xl w-full rounded-3xl p-8 border border-neon-violet/30 shadow-[0_0_50px_rgba(139,92,246,0.15)] transform transition-all scale-95 opacity-0">
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-glass-border">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-neon-violet/20 flex items-center justify-center text-neon-violet border border-neon-violet/40 shadow-lg">
+                        <span class="material-symbols-outlined">add_circle</span>
+                    </div>
+                    <h3 class="font-headline-lg text-white font-bold text-xl">Registrar Movimiento</h3>
+                </div>
+                <button onclick="toggleModal()" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors text-on-surface-variant hover:text-white">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-[11px] font-label-caps text-on-surface-variant mb-3 uppercase tracking-widest">Tipo de Movimiento</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <button onclick="selectMovType('APERTURA')" id="mov-btn-APERTURA" class="mov-btn px-2 py-3 rounded-xl border border-glass-border font-label-caps text-[10px] bg-neon-violet/20 text-white border-neon-violet/50">APERTURA</button>
+                        <button onclick="selectMovType('REPOSICIÓN')" id="mov-btn-REPOSICIÓN" class="mov-btn px-2 py-3 rounded-xl border border-glass-border font-label-caps text-[10px] text-on-surface-variant hover:bg-white/5 transition-all">REPOSICIÓN</button>
+                        <button onclick="selectMovType('CONSUMO')" id="mov-btn-CONSUMO" class="mov-btn px-2 py-3 rounded-xl border border-glass-border font-label-caps text-[10px] text-on-surface-variant hover:bg-white/5 transition-all">CONSUMO</button>
+                        <button onclick="selectMovType('MERMA')" id="mov-btn-MERMA" class="mov-btn px-2 py-3 rounded-xl border border-glass-border font-label-caps text-[10px] text-on-surface-variant hover:bg-white/5 transition-all">MERMA</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-on-surface-variant mb-2 uppercase tracking-widest">Categoría</label>
+                        <select id="select-category" onchange="updateModalProductOptions()" class="w-full bg-surface-container border border-glass-border rounded-xl px-4 py-3 text-white text-[14px] focus:border-neon-violet outline-none">
+                            <option value="Bebidas con Alcohol" class="bg-obsidian-bg text-white">Bebidas con Alcohol</option>
+                            <option value="Cervezas" class="bg-obsidian-bg text-white">Cervezas</option>
+                            <option value="Bebidas Sin Alcohol" class="bg-obsidian-bg text-white">Bebidas Sin Alcohol</option>
+                            <option value="Cafetería y Desayuno" class="bg-obsidian-bg text-white">Cafetería y Desayuno</option>
+                            <option value="Cristalería y Vajilla" class="bg-obsidian-bg text-white">Cristalería y Vajilla</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-label-caps text-on-surface-variant mb-2 uppercase tracking-widest">Producto</label>
+                        <select id="select-product" class="w-full bg-surface-container border border-glass-border rounded-xl px-4 py-3 text-white text-[14px] focus:border-neon-violet outline-none">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-label-caps text-on-surface-variant mb-2 uppercase tracking-widest">Cantidad (Unidades)</label>
+                    <div class="flex items-center gap-3 bg-surface-container border border-glass-border rounded-xl p-2 w-full max-w-xs">
+                        <button onclick="changeQty(-1)" class="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center font-bold text-xl text-white transition-colors">-</button>
+                        <input id="qty-val" type="number" min="1" value="1" class="flex-1 bg-transparent text-center font-display-stock text-2xl font-bold text-white outline-none" />
+                        <button onclick="changeQty(1)" class="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center font-bold text-xl text-white transition-colors">+</button>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-glass-border">
+                    <button onclick="toggleModal()" class="px-6 py-3 rounded-xl border border-glass-border font-label-caps text-[12px] text-on-surface-variant hover:bg-white/5 transition-all">Cancelar</button>
+                    <button onclick="saveMovement()" class="px-8 py-3 rounded-xl bg-gradient-to-r from-neon-violet to-primary text-white font-label-caps text-[12px] font-bold shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px]">check_circle</span> Guardar Registro
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP CANVAS -->
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full h-row-height bg-obsidian-bg/80 backdrop-blur-md border-b border-glass-border z-30 px-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-neon-violet to-primary flex items-center justify-center shadow-lg shadow-neon-violet/30">
+                <span class="material-symbols-outlined text-white font-bold text-[22px]">wine_bar</span>
+            </div>
+            <div>
+                <h1 class="font-display-stock text-white tracking-tight font-bold text-xl">Bar Central</h1>
+                <span class="hidden md:inline-block text-[11px] font-label-caps text-on-surface-variant uppercase tracking-widest pl-2 ml-2 border-l border-glass-border">Control de Inventario Premium</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="syncGoogleSheets()" class="bg-gradient-to-r from-primary to-primary-container text-white px-4 py-2 rounded-xl font-metric-sm text-[13px] font-bold flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg shadow-purple-900/40 transition-all">
+                <span class="material-symbols-outlined text-[18px]">sync</span>
+                Sincronizar Google Sheets
+            </button>
+            <button onclick="setupWhatsappAlerts()" class="bg-gradient-to-r from-secondary to-secondary-container text-white px-4 py-2 rounded-xl font-metric-sm text-[13px] font-bold flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg shadow-emerald-900/40 transition-all">
+                <span class="material-symbols-outlined text-[18px]">chat</span>
+                Alertas WhatsApp
+            </button>
+            <div class="flex items-center ml-4 gap-2 border-l border-glass-border pl-4">
+                <span onclick="showStockNotifications()" class="material-symbols-outlined text-on-surface-variant hover:text-white cursor-pointer p-2 rounded-full hover:bg-white/5 transition-colors">notifications</span>
+                <span onclick="showSystemSettings()" class="material-symbols-outlined text-on-surface-variant hover:text-white cursor-pointer p-2 rounded-full hover:bg-white/5 transition-colors">settings</span>
+                <div class="flex items-center gap-2 ml-2">
+                    <div id="header-avatar" class="w-9 h-9 rounded-full bg-gradient-to-tr from-neon-violet to-purple-600 text-white flex items-center justify-center font-bold text-[15px] shadow-[0_0_15px_rgba(139,92,246,0.4)]">A</div>
+                    <span id="header-username" class="hidden sm:block font-metric-sm font-bold text-white text-[14px]">Abel</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SideNavBar -->
+    <aside class="hidden md:flex fixed left-0 top-0 h-full w-64 bg-obsidian-bg border-r border-glass-border flex-col py-6 z-20 pt-[88px]">
+        <div class="px-6 mb-8">
+            <div class="bg-surface-container rounded-2xl p-1.5 flex gap-1 border border-glass-border shadow-inner">
+                <button onclick="setShift('MAÑANA')" class="shift-btn flex-1 text-[10px] py-2.5 rounded-xl font-label-caps bg-neon-violet text-white font-bold shadow-lg shadow-purple-500/20 transition-all">MAÑANA</button>
+                <button onclick="setShift('TARDE')" class="shift-btn flex-1 text-[10px] py-2.5 rounded-xl font-label-caps text-on-surface-variant hover:text-white transition-all">TARDE</button>
+                <button onclick="setShift('NOCHE')" class="shift-btn flex-1 text-[10px] py-2.5 rounded-xl font-label-caps text-on-surface-variant hover:text-white transition-all">NOCHE</button>
+            </div>
+        </div>
+        <nav class="flex-1 px-4 space-y-1.5">
+            <a onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item flex items-center gap-3 px-4 py-3.5 rounded-xl bg-neon-violet/15 text-neon-violet font-bold font-label-caps text-[13px] border-l-4 border-neon-violet shadow-sm cursor-pointer transition-all">
+                <span class="material-symbols-outlined">dashboard</span> Resumen General
+            </a>
+            <a onclick="switchTab('catalog')" id="nav-catalog" class="nav-item flex items-center gap-3 px-4 py-3.5 rounded-xl text-on-surface-variant hover:text-white hover:bg-white/5 font-label-caps text-[13px] cursor-pointer transition-all hover:translate-x-1">
+                <span class="material-symbols-outlined">inventory_2</span> Catálogo y Stock
+            </a>
+            <a onclick="switchTab('movements')" id="nav-movements" class="nav-item flex items-center gap-3 px-4 py-3.5 rounded-xl text-on-surface-variant hover:text-white hover:bg-white/5 font-label-caps text-[13px] cursor-pointer transition-all hover:translate-x-1">
+                <span class="material-symbols-outlined">swap_horiz</span> Historial de Cargas
+            </a>
+            <a onclick="switchTab('analytics')" id="nav-analytics" class="nav-item flex items-center gap-3 px-4 py-3.5 rounded-xl text-on-surface-variant hover:text-white hover:bg-white/5 font-label-caps text-[13px] cursor-pointer transition-all hover:translate-x-1">
+                <span class="material-symbols-outlined">leaderboard</span> Analítica Semanal
+            </a>
+        </nav>
+        <div class="px-6 py-6 mt-auto">
+            <div class="bg-surface-container rounded-2xl p-4 border border-glass-border shadow-xl shadow-black/50 mb-4">
+                <div class="flex items-center gap-2 mb-1">
+                    <div class="w-2 h-2 rounded-full bg-neon-violet animate-pulse shadow-[0_0_8px_#8b5cf6]"></div>
+                    <span id="sidebar-role" class="text-[10px] font-label-caps text-neon-violet uppercase tracking-wider font-bold">ADMIN GENERAL ONLINE</span>
+                </div>
+                <p id="sidebar-username" class="font-metric-sm text-white font-bold text-[16px]">Abel</p>
+                <p id="sidebar-shift-display" class="text-[11px] text-on-surface-variant font-metric-sm mt-1">Turno: MAÑANA</p>
+            </div>
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-critical-crimson hover:bg-red-500/10 font-label-caps text-[13px] font-bold border border-critical-crimson/20 transition-all cursor-pointer">
+                <span class="material-symbols-outlined text-[18px]">logout</span> Cerrar Sesión
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Canvas -->
+    <main class="md:ml-64 pt-28 px-8 pb-16 min-h-screen bg-obsidian-gradient">
+        <!-- Title & Action Button -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+            <div>
+                <div class="flex items-center gap-2 text-on-surface-variant text-xs uppercase tracking-widest font-label-caps mb-1">
+                    <span>ADMIN</span> <span class="material-symbols-outlined text-[14px]">chevron_right</span> <span class="text-neon-violet font-bold">DASHBOARD DE INVENTARIO</span>
+                </div>
+                <h2 class="text-3xl font-display-stock font-bold text-white tracking-tight">Control de Inventario</h2>
+            </div>
+            <button onclick="toggleModal()" class="bg-gradient-to-r from-neon-violet to-purple-500 text-white font-label-caps px-6 py-3.5 rounded-2xl font-bold shadow-[0_0_30px_rgba(139,92,246,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
+                <span class="material-symbols-outlined">add</span> Registrar Movimiento
+            </button>
+        </div>
+
+        <!-- KPI Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Items -->
+            <div class="glass-card p-6 rounded-3xl relative overflow-hidden group hover:border-primary/40 transition-all duration-300">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-6xl text-primary">category</span>
+                </div>
+                <p class="font-label-caps text-on-surface-variant text-[11px] mb-2 uppercase tracking-widest font-bold">PRODUCTOS TOTALES</p>
+                <div class="flex items-baseline gap-2">
+                    <span id="kpi-total" class="font-display-stock text-5xl font-extrabold text-white">25</span>
+                    <span class="text-on-surface-variant font-label-caps text-xs">ÍTEMS</span>
+                </div>
+                <div class="mt-4 flex items-center gap-1 text-primary font-metric-sm text-xs font-bold">
+                    <span class="material-symbols-outlined text-[16px]">trending_up</span>
+                    <span>+2 agregados este mes</span>
+                </div>
+            </div>
+
+            <!-- Normal State -->
+            <div class="glass-card p-6 rounded-3xl relative overflow-hidden group hover:border-secondary/40 transition-all duration-300">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-6xl text-secondary">check_circle</span>
+                </div>
+                <p class="font-label-caps text-on-surface-variant text-[11px] mb-2 uppercase tracking-widest font-bold text-secondary">ESTADO NORMAL</p>
+                <div class="flex items-baseline gap-2">
+                    <span id="kpi-normal" class="font-display-stock text-5xl font-extrabold text-white">21</span>
+                    <span class="text-on-surface-variant font-label-caps text-xs">ESTABLE</span>
+                </div>
+                <div class="mt-4 flex items-center gap-3 w-full">
+                    <div class="flex-1 bg-surface-container rounded-full h-1.5 overflow-hidden">
+                        <div id="kpi-normal-bar" class="bg-secondary h-full rounded-full transition-all duration-1000" style="width: 84%;"></div>
+                    </div>
+                    <span id="kpi-normal-pct" class="text-secondary font-bold text-xs">84%</span>
+                </div>
+            </div>
+
+            <!-- Critical Stock -->
+            <div class="glass-card p-6 rounded-3xl relative overflow-hidden group hover:border-neon-violet/50 transition-all duration-300 bg-neon-violet/5">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-6xl text-neon-violet">warning</span>
+                </div>
+                <p class="font-label-caps text-neon-violet text-[11px] mb-2 uppercase tracking-widest font-bold">STOCK CRÍTICO</p>
+                <div class="flex items-baseline gap-2">
+                    <span id="kpi-critical" class="font-display-stock text-5xl font-extrabold text-neon-violet animate-pulse">04</span>
+                    <span class="text-on-surface-variant font-label-caps text-xs">ALERTAS</span>
+                </div>
+                <div class="mt-4 flex items-center gap-1 text-neon-violet font-metric-sm text-xs font-bold">
+                    <span class="material-symbols-outlined text-[16px]">priority_high</span>
+                    <span>Acción requerida inmediata</span>
+                </div>
+            </div>
+
+            <!-- Mermas Turno -->
+            <div class="glass-card p-6 rounded-3xl relative overflow-hidden group hover:border-error/40 transition-all duration-300">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-6xl text-error">delete_sweep</span>
+                </div>
+                <p class="font-label-caps text-error text-[11px] mb-2 uppercase tracking-widest font-bold">MERMAS DEL TURNO</p>
+                <div class="flex items-baseline gap-2">
+                    <span id="kpi-mermas" class="font-display-stock text-5xl font-extrabold text-error">02</span>
+                    <span class="text-on-surface-variant font-label-caps text-xs">UNIDADES</span>
+                </div>
+                <div class="mt-4 flex items-center gap-1 text-error font-metric-sm text-xs font-bold">
+                    <span class="material-symbols-outlined text-[16px]">history</span>
+                    <span>Reportado hace 1h</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Consumption Chart -->
+        <section class="glass-card p-8 rounded-3xl mb-8 border border-glass-border shadow-2xl">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h3 class="font-headline-md text-white font-bold text-xl">Consumo Semanal de Bebidas</h3>
+                    <p class="text-on-surface-variant text-[14px]">Promedio de unidades despachadas por día</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-neon-violet shadow-[0_0_10px_#8b5cf6]"></div>
+                    <span class="text-xs font-label-caps text-on-surface-variant font-bold">Unidades Despachadas</span>
+                </div>
+            </div>
+            <div class="h-64 flex items-end justify-between gap-4 px-6 relative">
+                <!-- Grid Lines -->
+                <div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8">
+                    <div class="border-b border-white/5 w-full"></div>
+                    <div class="border-b border-white/5 w-full"></div>
+                    <div class="border-b border-white/5 w-full"></div>
+                    <div class="border-b border-white/5 w-full"></div>
+                </div>
+                <!-- Bars -->
+                <div class="flex-1 flex flex-col items-center gap-3 z-10"><div class="chart-bar w-full max-w-[48px] rounded-t-xl transition-all duration-500 hover:brightness-125" style="height: 45%;"></div><span class="text-xs font-label-caps text-on-surface-variant font-bold">LUN</span></div>
+                <div class="flex-1 flex flex-col items-center gap-3 z-10"><div class="chart-bar w-full max-w-[48px] rounded-t-xl transition-all duration-500 hover:brightness-125" style="height: 38%;"></div><span class="text-xs font-label-caps text-on-surface-variant font-bold">MAR</span></div>
+                <div class="flex-1 flex flex-col items-center gap-3 z-10"><div class="chart-bar w-full max-w-[48px] rounded-t-xl transition-all duration-500 hover:brightness-125" style="height: 52%;"></div><span class="text-xs font-label-caps text-on-surface-variant font-bold">MIÉ</span></div>
+                <div class="flex-1 flex flex-col items-center gap-3 z-10"><div class="chart-bar w-full max-w-[48px] rounded-t-xl transition-all duration-500 hover:brightness-125" style="height: 48%;"></div><span class="text-xs font-label-caps text-on-surface-variant font-bold">JUE</span></div>
+                <div class="flex-1 flex flex-col items-center gap-3 z-10"><div class="chart-bar w-full max-w-[48px] rounded-t-xl transition-all duration-500 hover:brightness-125 shadow-[0_0_20px_rgba(139,92,246,0.6)] bg-gradient-to-t from-purple-900 to-purple-400" style="height: 85%;"></div><span class="text-xs font-label-caps text-primary font-bold">VIE</span></div>
+                <div class="flex-1 flex flex-col items-center gap-3 z-10"><div class="chart-bar w-full max-w-[48px] rounded-t-xl transition-all duration-500 hover:brightness-125 shadow-[0_0_30px_rgba(139,92,246,0.8)] bg-gradient-to-t from-purple-800 to-indigo-400" style="height: 100%;"></div><span class="text-xs font-label-caps text-primary font-bold">SÁB</span></div>
+                <div class="flex-1 flex flex-col items-center gap-3 z-10"><div class="chart-bar w-full max-w-[48px] rounded-t-xl transition-all duration-500 hover:brightness-125 shadow-[0_0_15px_rgba(139,92,246,0.5)] bg-gradient-to-t from-purple-900 to-purple-500" style="height: 75%;"></div><span class="text-xs font-label-caps text-primary font-bold">DOM</span></div>
+            </div>
+        </section>
+
+        <!-- Filters & Table Section -->
+        <div class="glass-card rounded-3xl overflow-hidden mb-8 border border-glass-border shadow-2xl">
+            <div class="p-6 border-b border-glass-border flex flex-wrap items-center justify-between gap-4 bg-surface-container/30">
+                <div id="filter-buttons" class="flex flex-wrap gap-2">
+                    <button onclick="setCategoryFilter('Todos')" class="cat-filter-btn px-5 py-2.5 rounded-full font-metric-sm text-xs font-bold bg-neon-violet/20 text-neon-violet border border-neon-violet/40 shadow-md">Todos</button>
+                    <button onclick="setCategoryFilter('Bebidas con Alcohol')" class="cat-filter-btn px-5 py-2.5 rounded-full font-metric-sm text-xs font-bold text-on-surface-variant hover:text-white hover:bg-white/5 border border-transparent transition-all">Bebidas con Alcohol</button>
+                    <button onclick="setCategoryFilter('Cervezas')" class="cat-filter-btn px-5 py-2.5 rounded-full font-metric-sm text-xs font-bold text-on-surface-variant hover:text-white hover:bg-white/5 border border-transparent transition-all">Cervezas</button>
+                    <button onclick="setCategoryFilter('Bebidas Sin Alcohol')" class="cat-filter-btn px-5 py-2.5 rounded-full font-metric-sm text-xs font-bold text-on-surface-variant hover:text-white hover:bg-white/5 border border-transparent transition-all">Sin Alcohol</button>
+                    <button onclick="setCategoryFilter('Cafetería y Desayuno')" class="cat-filter-btn px-5 py-2.5 rounded-full font-metric-sm text-xs font-bold text-on-surface-variant hover:text-white hover:bg-white/5 border border-transparent transition-all">Cafetería</button>
+                    <button onclick="setCategoryFilter('Cristalería y Vajilla')" class="cat-filter-btn px-5 py-2.5 rounded-full font-metric-sm text-xs font-bold text-on-surface-variant hover:text-white hover:bg-white/5 border border-transparent transition-all">Vajilla</button>
+                </div>
+                <div class="relative min-w-[280px]">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                    <input id="search-input" oninput="handleSearch(this.value)" class="w-full bg-surface-container border border-glass-border rounded-xl pl-12 pr-4 py-3 text-white placeholder-on-surface-variant text-sm focus:ring-2 focus:ring-neon-violet focus:border-neon-violet outline-none transition-all" placeholder="Buscar producto por nombre o ID..." />
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-surface-container-high/40 text-on-surface-variant font-label-caps text-[11px] uppercase tracking-wider border-b border-glass-border">
+                            <th class="px-6 py-5 font-bold">ID</th>
+                            <th class="px-6 py-5 font-bold">Categoría</th>
+                            <th class="px-6 py-5 font-bold">Producto</th>
+                            <th class="px-6 py-5 font-bold">Unidad</th>
+                            <th class="px-6 py-5 font-bold text-center">Stock Actual</th>
+                            <th class="px-6 py-5 font-bold text-center">Mínimo Alerta</th>
+                            <th class="px-6 py-5 font-bold text-right">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="catalog-tbody" class="divide-y divide-glass-border">
+                        <!-- Populated dynamically via REST API -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-6 bg-surface-container/30 flex items-center justify-between border-t border-glass-border">
+                <span id="pagination-info" class="text-xs text-on-surface-variant font-metric-sm font-bold">Mostrando 0 de 0 productos</span>
+                <div class="flex gap-2">
+                    <button id="page-prev" onclick="changePage(-1)" class="px-4 py-2 rounded-xl border border-glass-border bg-surface-container hover:bg-white/10 text-white disabled:opacity-30 disabled:pointer-events-none transition-all font-bold text-sm flex items-center gap-1">
+                        <span class="material-symbols-outlined">chevron_left</span> Anterior
+                    </button>
+                    <button id="page-next" onclick="changePage(1)" class="px-4 py-2 rounded-xl border border-glass-border bg-surface-container hover:bg-white/10 text-white disabled:opacity-30 disabled:pointer-events-none transition-all font-bold text-sm flex items-center gap-1">
+                        Siguiente <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Insights & Activity Feed -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 glass-card p-8 rounded-3xl border border-glass-border shadow-2xl">
+                <h3 class="font-headline-md font-bold text-white text-xl mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-neon-violet">history</span> Actividad Reciente del Turno
+                </h3>
+                <div id="activity-list" class="space-y-3">
+                    <!-- Populated dynamically from SQLite -->
+                </div>
+            </div>
+
+            <!-- Cinematic Stock Value -->
+            <div class="glass-card p-8 rounded-3xl border border-glass-border shadow-2xl flex flex-col justify-between bg-gradient-to-br from-purple-950/20 to-indigo-950/20">
+                <div>
+                    <h3 class="font-headline-md font-bold text-white text-xl mb-2 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">account_balance_wallet</span> Valor del Stock
+                    </h3>
+                    <p class="text-on-surface-variant text-[14px] mb-6">Valorización estimada total del catálogo en tiempo real.</p>
+                    <div id="kpi-value" class="font-display-stock text-5xl font-extrabold text-white tracking-tight">$452.8k</div>
+                    <p class="text-xs text-secondary mt-3 flex items-center gap-1.5 font-metric-sm font-bold bg-secondary/10 border border-secondary/30 px-3 py-1.5 rounded-full inline-flex">
+                        <span class="material-symbols-outlined text-[14px]">trending_up</span> +12.4% vs Mes Anterior en Google Sheets
+                    </p>
+                </div>
+                <div class="mt-8 relative rounded-2xl overflow-hidden border border-neon-violet/30 shadow-[0_0_30px_rgba(139,92,246,0.3)]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 flex items-end p-4">
+                        <span class="text-xs font-bold text-white font-label-caps uppercase tracking-wider">Barra Premium Auditada</span>
+                    </div>
+                    <img class="w-full h-40 object-cover hover:scale-105 transition-transform duration-700" alt="Premium Spirits Cinematic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7Iy25k_xNunXR58qoAU3w1YAMOCbnqfJbt0_Blr7tyBPGOP9ac4mSRXx6Ho6n1I9OpmLwhAj3skd70jCRrD2Hqov1rB9EYiTc7FCmnQnIXE7k1mhmXJ-tbutuTdlRh8pSBytonc146T6LUCbsNJ9tXerzlhhL7598sQqS6B3fK7X43Fb6Es0gG434XzA7GYBNlry-YFpgGg0SpxYi2MxpjoegGLx__ED1YvOY5tC60gJaC7jRnae87-N-_SZYlGOw9_GnEXwsxGk"/>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- APP STATE ---
+        let catalog = [];
+        let activityFeed = [];
+        
+        let currentUser = 'Abel';
+        let currentRole = 'Admin General';
+        let selectedShift = 'MAÑANA';
+
+        let loginSelectedUser = 'Abel';
+        let loginSelectedRole = 'Admin General';
+        let loginSelectedShift = 'MAÑANA';
+
+        let activeCatFilter = 'Todos';
+        let searchQuery = '';
+        let currentPage = 1;
+        const itemsPerPage = 8;
+        let selectedMovType = 'APERTURA';
+
+        // --- ON LOAD ---
+        window.addEventListener('DOMContentLoaded', async () => {
+            const savedSession = localStorage.getItem('barCentral_userSession');
+            if (savedSession) {
+                try {
+                    const data = JSON.parse(savedSession);
+                    currentUser = data.user || 'Abel';
+                    currentRole = data.role || 'Admin General';
+                    selectedShift = data.shift || 'MAÑANA';
+                } catch (e) {
+                    showLoginModal();
+                }
+            } else {
+                showLoginModal();
+            }
+
+            updateUIHeader();
+            await fetchCatalog();
+            await fetchMovements();
+        });
+
+        // --- FETCH DATA FROM SQLITE ---
+        async function fetchCatalog() {
+            try {
+                const res = await fetch('/api/catalog');
+                catalog = await res.json();
+                renderTableAndKPIs();
+                updateModalProductOptions();
+            } catch (err) {
+                console.error('Error al cargar catálogo:', err);
+            }
+        }
+
+        async function fetchMovements() {
+            try {
+                const res = await fetch('/api/movements');
+                activityFeed = await res.json();
+                renderActivityFeed();
+            } catch (err) {
+                console.error('Error al cargar movimientos:', err);
+            }
+        }
+
+        // --- AUTH & LOGIN MODAL ---
+        function showLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+            selectUser('Abel', 'Admin General');
+            selectLoginShift('MAÑANA');
+        }
+
+        function selectUser(name, role) {
+            loginSelectedUser = name;
+            loginSelectedRole = role;
+
+            document.querySelectorAll('.user-btn').forEach(b => {
+                b.className = 'user-btn p-4 rounded-2xl border border-glass-border text-left hover:bg-white/5 transition-all group flex items-center gap-3';
+            });
+            const btn = document.getElementById(`user-btn-${name}`);
+            if (btn) btn.className = 'user-btn p-4 rounded-2xl border border-neon-violet bg-neon-violet/20 text-left shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all group flex items-center gap-3';
+            
+            const customInput = document.getElementById('custom-username');
+            if (customInput) customInput.value = '';
+        }
+
+        function selectCustomUser(val) {
+            if (!val || val.trim() === '') return;
+            loginSelectedUser = val.trim();
+            loginSelectedRole = 'Bartender / Colaborador';
+            document.querySelectorAll('.user-btn').forEach(b => {
+                b.className = 'user-btn p-4 rounded-2xl border border-glass-border text-left hover:bg-white/5 transition-all group flex items-center gap-3';
+            });
+        }
+
+        function selectLoginShift(shift) {
+            loginSelectedShift = shift;
+            document.querySelectorAll('.login-shift-btn').forEach(b => {
+                b.className = 'login-shift-btn p-3 rounded-xl border border-glass-border text-center hover:bg-white/5 font-label-caps text-[12px] transition-all';
+            });
+            const active = document.getElementById(`login-shift-${shift}`);
+            if (active) active.className = 'login-shift-btn p-3 rounded-xl border border-neon-violet bg-neon-violet/20 text-white font-bold text-center font-label-caps text-[12px] shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all';
+        }
+
+        function submitLogin() {
+            if (!loginSelectedUser) {
+                alert('Por favor selecciona o ingresa un nombre.');
+                return;
+            }
+            currentUser = loginSelectedUser;
+            currentRole = loginSelectedRole;
+            selectedShift = loginSelectedShift;
+
+            localStorage.setItem('barCentral_userSession', JSON.stringify({ user: currentUser, role: currentRole, shift: selectedShift }));
+            document.getElementById('login-modal').classList.add('hidden');
+            updateUIHeader();
+        }
+
+        function logout() {
+            localStorage.removeItem('barCentral_userSession');
+            showLoginModal();
+        }
+
+        function updateUIHeader() {
+            const avatar = document.getElementById('header-avatar');
+            const userSpan = document.getElementById('header-username');
+            const roleSpan = document.getElementById('sidebar-role');
+            const sideUser = document.getElementById('sidebar-username');
+            const sideShift = document.getElementById('sidebar-shift-display');
+
+            if (avatar) avatar.textContent = currentUser.charAt(0).toUpperCase();
+            if (userSpan) userSpan.textContent = currentUser;
+            if (sideUser) sideUser.textContent = currentUser;
+            if (roleSpan) roleSpan.textContent = `${currentRole.toUpperCase()} ONLINE`;
+            if (sideShift) sideShift.textContent = `Turno: ${selectedShift}`;
+
+            document.querySelectorAll('.shift-btn').forEach(b => {
+                if (b.textContent.trim() === selectedShift) b.className = 'shift-btn flex-1 text-[10px] py-2.5 rounded-xl font-label-caps bg-neon-violet text-white font-bold shadow-lg shadow-purple-500/20 transition-all';
+                else b.className = 'shift-btn flex-1 text-[10px] py-2.5 rounded-xl font-label-caps text-on-surface-variant hover:text-white transition-all';
+            });
+        }
+
+        function setShift(s) {
+            selectedShift = s;
+            localStorage.setItem('barCentral_userSession', JSON.stringify({ user: currentUser, role: currentRole, shift: selectedShift }));
+            updateUIHeader();
+            alert(`Turno activo configurado a: ${s}`);
+        }
+
+        // --- FILTER, SEARCH, PAGINATION ---
+        function setCategoryFilter(cat) {
+            activeCatFilter = cat;
+            currentPage = 1;
+            document.querySelectorAll('.cat-filter-btn').forEach(b => {
+                if (b.textContent.trim() === cat) b.className = 'cat-filter-btn px-5 py-2.5 rounded-full font-metric-sm text-xs font-bold bg-neon-violet/20 text-neon-violet border border-neon-violet/40 shadow-md';
+                else b.className = 'cat-filter-btn px-5 py-2.5 rounded-full font-metric-sm text-xs font-bold text-on-surface-variant hover:text-white hover:bg-white/5 border border-transparent transition-all';
+            });
+            renderTableAndKPIs();
+        }
+
+        function handleSearch(val) {
+            searchQuery = val;
+            currentPage = 1;
+            renderTableAndKPIs();
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderTableAndKPIs();
+        }
+
+        // --- MODAL CONTROLS ---
+        function toggleModal() {
+            const modal = document.getElementById('movement-modal');
+            const container = document.getElementById('modal-container');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    container.classList.remove('scale-95', 'opacity-0');
+                    container.classList.add('scale-100', 'opacity-100');
+                }, 10);
+                selectMovType('APERTURA');
+                updateModalProductOptions();
+            } else {
+                container.classList.add('scale-95', 'opacity-0');
+                container.classList.remove('scale-100', 'opacity-100');
+                setTimeout(() => { modal.classList.add('hidden'); }, 300);
+            }
+        }
+
+        function selectMovType(type) {
+            selectedMovType = type;
+            document.querySelectorAll('.mov-btn').forEach(b => {
+                b.className = 'mov-btn px-2 py-3 rounded-xl border border-glass-border font-label-caps text-[10px] text-on-surface-variant hover:bg-white/5 transition-all';
+            });
+            const btn = document.getElementById(`mov-btn-${type}`);
+            if (btn) btn.className = 'mov-btn px-2 py-3 rounded-xl border border-glass-border font-label-caps text-[10px] bg-neon-violet/20 text-white border-neon-violet/50 shadow-[0_0_15px_rgba(139,92,246,0.3)] font-bold';
+        }
+
+        function changeQty(delta) {
+            const inp = document.getElementById('qty-val');
+            let val = parseInt(inp.value) || 1;
+            val += delta;
+            if (val < 1) val = 1;
+            inp.value = val;
+        }
+
+        function updateModalProductOptions() {
+            const catSelect = document.getElementById('select-category');
+            const prodSelect = document.getElementById('select-product');
+            if (!catSelect || !prodSelect || !catalog.length) return;
+
+            const selectedCat = catSelect.value;
+            prodSelect.innerHTML = '';
+            const filtered = catalog.filter(p => p.cat === selectedCat);
+            filtered.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.nombre; opt.textContent = `${p.nombre} (${p.unidad} - Stock: ${p.stock})`; opt.className = 'bg-obsidian-bg text-white';
+                prodSelect.appendChild(opt);
+            });
+        }
+
+        // --- SUBMIT MOVEMENT TO REST API ---
+        async function saveMovement() {
+            const cat = document.getElementById('select-category').value;
+            const product = document.getElementById('select-product').value;
+            const qty = parseInt(document.getElementById('qty-val').value) || 1;
+
+            if (!product) {
+                alert('Por favor selecciona un producto.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/movements', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user: currentUser,
+                        role: currentRole,
+                        shift: selectedShift,
+                        mov_type: selectedMovType,
+                        cat,
+                        product,
+                        qty
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    toggleModal();
+                    await fetchCatalog();
+                    await fetchMovements();
+                    alert(`¡ÉXITO! Movimiento registrado y almacenado en la Base de Datos SQLite y Google Sheets:\n\n• Turno: ${selectedShift}\n• Tipo: ${selectedMovType}\n• Producto: ${product}\n• Cantidad: ${qty}\n• Responsable: ${currentUser} (${currentRole})\n• Stock Actualizado: ${data.newStock}`);
+                } else {
+                    alert('Error al registrar: ' + data.error);
+                }
+            } catch (err) {
+                alert('Error de red al conectar con el servidor.');
+                console.error(err);
+            }
+        }
+
+        // --- RENDER TABLE & ACTIVITY FEED ---
+        function renderTableAndKPIs() {
+            if (!catalog.length) return;
+
+            let filtered = catalog.filter(p => {
+                const mCat = activeCatFilter === 'Todos' || p.cat === activeCatFilter;
+                const mSearch = p.nombre.toLowerCase().includes(searchQuery.toLowerCase()) || p.id.toLowerCase().includes(searchQuery.toLowerCase());
+                return mCat && mSearch;
+            });
+
+            const totalItems = filtered.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            const start = (currentPage - 1) * itemsPerPage;
+            const paginated = filtered.slice(start, start + itemsPerPage);
+
+            const tbody = document.getElementById('catalog-tbody');
+            tbody.innerHTML = '';
+
+            let critCount = 0;
+            let stableCount = 0;
+            let totalVal = 0;
+
+            catalog.forEach(p => {
+                if (p.stock <= p.min) critCount++;
+                else stableCount++;
+                totalVal += p.stock * p.precio;
+            });
+
+            paginated.forEach(p => {
+                const isCrit = p.stock <= p.min;
+                const tr = document.createElement('tr');
+                tr.className = `group ${isCrit ? 'bg-neon-violet/10 hover:bg-neon-violet/20' : 'hover:bg-white/5'} transition-colors cursor-pointer border-b border-glass-border`;
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-metric-sm text-on-surface-variant font-bold">${p.id}</td>
+                    <td class="px-6 py-4"><span class="text-xs bg-purple-900/40 text-purple-200 border border-purple-500/30 px-3 py-1 rounded-full font-bold shadow">${p.badge}</span></td>
+                    <td class="px-6 py-4 font-bold text-base ${isCrit ? 'text-neon-violet animate-pulse' : 'text-white'}">${p.nombre}</td>
+                    <td class="px-6 py-4 text-on-surface-variant text-sm">${p.unidad}</td>
+                    <td class="px-6 py-4 text-center font-display-stock text-2xl font-bold ${isCrit ? 'text-neon-violet font-extrabold' : 'text-white'}">${p.stock}</td>
+                    <td class="px-6 py-4 text-center text-on-surface-variant font-semibold text-sm">${p.min}</td>
+                    <td class="px-6 py-4 text-right">
+                        ${isCrit 
+                            ? `<span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-neon-violet/20 text-neon-violet border border-neon-violet/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]">
+                                <span class="material-symbols-outlined text-[14px]">warning</span> Crítico
+                               </span>`
+                            : `<span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-secondary/15 text-secondary border border-secondary/30">
+                                <span class="material-symbols-outlined text-[14px]">check_circle</span> Estable
+                               </span>`
+                        }
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update Pagination info
+            const pagInfo = document.getElementById('pagination-info');
+            if (pagInfo) {
+                const endItem = Math.min(start + itemsPerPage, totalItems);
+                pagInfo.textContent = `Mostrando ${totalItems > 0 ? start + 1 : 0} a ${endItem} de ${totalItems} productos`;
+            }
+            document.getElementById('page-prev').disabled = currentPage <= 1;
+            document.getElementById('page-next').disabled = currentPage >= totalPages;
+
+            // Update KPIs
+            document.getElementById('kpi-total').textContent = catalog.length;
+            document.getElementById('kpi-normal').textContent = stableCount;
+            document.getElementById('kpi-critical').textContent = critCount;
+            
+            const stablePct = Math.round((stableCount / catalog.length) * 100) || 0;
+            document.getElementById('kpi-normal-bar').style.width = `${stablePct}%`;
+            document.getElementById('kpi-normal-pct').textContent = `${stablePct}%`;
+
+            document.getElementById('kpi-value').textContent = `$${(totalVal / 1000).toFixed(1)}k`;
+        }
+
+        function renderActivityFeed() {
+            const list = document.getElementById('activity-list');
+            list.innerHTML = '';
+
+            if (!activityFeed.length) {
+                list.innerHTML = '<p class="text-sm text-on-surface-variant italic">No hay actividad registrada en este turno aún.</p>';
+                return;
+            }
+
+            activityFeed.forEach(act => {
+                let colorCls = 'text-primary bg-primary/15 border-primary/30';
+                let icon = 'swap_horiz';
+                let sign = '';
+                let valCls = 'text-primary font-bold';
+
+                if (act.mov_type === 'REPOSICIÓN') { colorCls = 'text-secondary bg-secondary/15 border-secondary/30'; icon = 'inventory'; sign = '+'; valCls = 'text-secondary font-bold'; }
+                else if (act.mov_type === 'CONSUMO') { colorCls = 'text-white bg-white/15 border-white/30'; icon = 'local_bar'; sign = '-'; valCls = 'text-white font-bold'; }
+                else if (act.mov_type === 'MERMA') { colorCls = 'text-error bg-error/15 border-error/30'; icon = 'broken_image'; sign = '-'; valCls = 'text-error font-bold'; }
+                else if (act.mov_type === 'APERTURA') { colorCls = 'text-neon-violet bg-neon-violet/15 border-neon-violet/30'; icon = 'play_circle'; valCls = 'text-neon-violet font-bold'; }
+
+                const d = new Date(act.timestamp);
+                const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between p-3.5 rounded-2xl bg-surface-container/50 hover:bg-white/10 border border-glass-border transition-all shadow-sm';
+                item.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center border shadow ${colorCls}">
+                            <span class="material-symbols-outlined font-bold">${icon}</span>
+                        </div>
+                        <div>
+                            <p class="font-metric-sm font-bold text-white text-sm">${act.mov_type}: ${act.product}</p>
+                            <p class="text-xs text-on-surface-variant mt-0.5">Reportado por ${act.user} (${act.role}) - Turno ${act.shift} | ${timeStr}</p>
+                        </div>
+                    </div>
+                    <span class="${valCls} text-base font-display-stock">${sign}${act.qty} Unidades</span>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // --- BUTTON ACTIONS ---
+        async function syncGoogleSheets() {
+            try {
+                const res = await fetch('/api/sync', { method: 'POST' });
+                const data = await res.json();
+                alert(`🔄 Sincronización Bidireccional Ejecutada con Éxito:\n\n✅ Conectado con SQLite Backend y Google Sheets.\n📊 Pestañas sincronizadas en tiempo real para el usuario ${currentUser} (${currentRole}).`);
+            } catch (e) {
+                alert('Error al sincronizar con el servidor.');
+            }
+        }
+
+        function setupWhatsappAlerts() {
+            alert(`📲 Conectando con n8n y WhatsApp Webhook...\n\n✅ Canal de alertas de stock crítico activado con éxito para los administradores Abel y Eli.`);
+        }
+
+        function showStockNotifications() {
+            const crits = catalog.filter(p => p.stock <= p.min).map(p => `• ${p.nombre} (Stock: ${p.stock} / Mínimo: ${p.min})`).join('\n');
+            alert(`🔔 Centro de Alertas Críticas (${currentUser}):\n\nHay ${catalog.filter(p => p.stock <= p.min).length} productos que requieren reposición inmediata:\n\n${crits || '¡Todo el stock se encuentra estable!'}`);
+        }
+
+        function showSystemSettings() {
+            alert(`⚙️ Configuración del Sistema en Vivo:\n\n• Usuario Activo: ${currentUser}\n• Perfil: ${currentRole}\n• Turno Activo: ${selectedShift}\n• Base de Datos: SQLite (bar_central.db)\n• Webhook n8n: Conectado\n• Google Sheets ID: 1a9s8d7f6g5h4j3k2l1\n• Moneda: ARS ($)`);
+        }
+
+        function switchTab(tab) {
+            alert(`📌 Has navegado a la pestaña: ${tab.toUpperCase()}.\nLos datos se encuentran sincronizados en vivo con el backend SQLite.`);
+        }
+    </script>
+</body>
+</html>

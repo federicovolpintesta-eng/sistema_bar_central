@@ -1,0 +1,11 @@
+{
+  "id": "assets/2cd9386e64fb4c00a3148a2c0dadaf5f",
+  "displayName": "Bar Central Premium Design System",
+  "theme": {
+    "colorMode": "DARK",
+    "font": "INTER",
+    "roundness": "ROUND_EIGHT",
+    "customColor": "#06b6d4"
+  },
+  "styleGuidelines": "## Brand & Style\nThe design system is built for a premium, high-stakes hospitality environment, evoking the atmosphere of a luxurious hotel bar or an exclusive nightclub.\n\n## Elevation & Depth\nDepth is achieved through Tonal Layering and Glassmorphism rather than traditional heavy shadows. Surfaces use Deep Obsidian (#0B0F19) and Slate (#1E293B) with glowing cyan and neon violet accents."
+}
